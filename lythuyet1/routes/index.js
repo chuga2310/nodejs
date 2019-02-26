@@ -40,13 +40,11 @@ router.get('/chi-tiet/:id', function (req, res, next) {
 router.get('/danh-muc/them', function (req, res, next) {
   res.render('danhmuc/them', { title: 'Thêm danh mục' })
 })
-router.post('/danh-muc/save-them', upload.single('image'), function (req, res, next) {
-  let filename = req.file.path.replace('public\\', '')
+router.post('/danh-muc/save-them', upload.single('image'),function (req, res, next) {
   let cate = new CategoryModel({
     _id: new mongoose.Types.ObjectId(),
     name: req.body.name,
-    desc: req.body.desc,
-    image: filename
+    desc: req.body.desc
   })
   cate.save((error) => {
     console.log('luu danh muc thanh cong')
@@ -54,6 +52,22 @@ router.post('/danh-muc/save-them', upload.single('image'), function (req, res, n
   })
   res.redirect('/')
 })
+router.get('/danh-muc/sua/:id', function (req, res, next) {
+  CategoryModel.findOne({ _id: req.params.id })
+    .exec((err, result) => {
+      res.render('danhmuc/sua', { category: result, _id: req.params.id, title: 'Sửa danh mục' })
+    })
+})
+router.post('/danh-muc/save-sua/:id', upload.single('image'), function (req, res, next) {
+  console.log(req.body.name)
+  CategoryModel.updateOne({ _id: req.params.id },
+    {
+      name: req.body.name,
+      desc: req.body.desc
+    }, () => console.log('sua thanh cong'))
+  res.redirect('/danh-muc/' + req.params.id)
+})
+
 
 //them sanpham
 router.get('/san-pham/them/:id', function (req, res, next) {
@@ -62,7 +76,7 @@ router.get('/san-pham/them/:id', function (req, res, next) {
 router.post('/san-pham/save-them/:id', upload.single('image'), function (req, res, next) {
   let filename = req.file.path.replace('public\\', '')
   let product = new ProductModel({
-    _id: new  mongoose.Types.ObjectId(),
+    _id: new mongoose.Types.ObjectId(),
     name: req.body.name,
     price: req.body.price,
     old_price: req.body.old_price,
@@ -78,9 +92,10 @@ router.post('/san-pham/save-them/:id', upload.single('image'), function (req, re
 
 //Xoa san pham
 router.get('/san-pham/xoa/:id', function (req, res, next) {
-  ProductModel.deleteOne({ _id: req.params.id }, () => {
-    res.redirect('/')
-  })
+    ProductModel.deleteOne({ _id: req.params.id }, () => {
+      res.redirect('/')
+    })
+
 })
 
 //Sua san pham
@@ -88,7 +103,7 @@ router.get('/san-pham/sua/:id', function (req, res, next) {
   ProductModel.findOne({ _id: req.params.id }).
     populate('cate_id')
     .exec((err, result) => {
-      res.render('sanpham/sua', { product: result, _id: req.params.id, title: 'Thêm sản phẩm' })
+      res.render('sanpham/sua', { product: result, _id: req.params.id, title: 'Sửa sản phẩm' })
     })
 })
 router.post('/san-pham/save-sua/:id', upload.single('image'), function (req, res, next) {
@@ -102,7 +117,7 @@ router.post('/san-pham/save-sua/:id', upload.single('image'), function (req, res
         price: req.body.price,
         old_price: req.body.old_price,
         image: "http://localhost:3000/" + filename
-      }, ()=>console.log('sua thanh cong'))
+      }, () => console.log('sua thanh cong'))
   } else {
     ProductModel.updateOne({ _id: req.params.id },
       {
@@ -144,8 +159,8 @@ router.get('/danh-muc/:id', function (req, res, next) {
 })
 
 //Danh sach san pham = danh muc
-router.get('/api/danh-sach-danh-muc',function(req, res,next){
-  CategoryModel.find().then((cate)=>res.json(cate))
+router.get('/api/danh-sach-danh-muc', function (req, res, next) {
+  CategoryModel.find().then((cate) => res.json(cate))
 })
 
 router.get('/api/san-pham/:id', function (req, res, next) {

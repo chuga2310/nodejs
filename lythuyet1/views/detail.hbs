@@ -15,7 +15,7 @@
               </p>
               <div class="text-right">
                 <a href="/san-pham/sua/{{product._id}}" class="btn btn-warning">Sửa</a>
-                <a href="/san-pham/xoa/{{product._id}}" class="btn btn-danger">Xoá</a>
+                <a href="javascript:void(0)" class="btn btn-danger" id="delete" onclick="">Xoá</a>
               </div>
           </div>
         </div>
@@ -23,3 +23,17 @@
     </div>
   </section>
 </div>
+<script src="plugins/jquery/jquery.min.js"></script>
+<script>
+  $("#delete").on('click', function () {
+      let check = confirm("Bạn có chắc chắn muốn xoá sản phẩm")
+      if(check){
+        location.href="san-pham/xoa/{{product._id}}";
+      }
+    });
+  function onDelete() {
+    
+    
+  }
+</script>
+
